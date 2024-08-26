@@ -1,0 +1,89 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Supplier {
+  createdAt          DateTime            @default(now())
+  designDevelopments DesignDevelopment[]
+  id                 String              @id @default(cuid())
+  name               String?
+  organization       Organization?       @relation(fields: [organizationId], references: [id])
+  organizationId     String?
+  updatedAt          DateTime            @updatedAt
+}
+
+model Organization {
+  clients      Client[]
+  createdAt    DateTime                   @default(now())
+  id           String                     @id @default(cuid())
+  name         String?
+  suppliers    Supplier[]
+  typeField    EnumOrganizationTypeField?
+  updatedAt    DateTime                   @updatedAt
+  userAccounts UserAccount[]
+}
+
+model DesignDevelopment {
+  client      Client?                      @relation(fields: [clientId], references: [id])
+  clientId    String?
+  createdAt   DateTime                     @default(now())
+  id          String                       @id @default(cuid())
+  name        String?
+  productions Production[]
+  status      EnumDesignDevelopmentStatus?
+  supplier    Supplier?                    @relation(fields: [supplierId], references: [id])
+  supplierId  String?
+  updatedAt   DateTime                     @updatedAt
+}
+
+model UserAccount {
+  createdAt      DateTime             @default(now())
+  email          String?
+  id             String               @id @default(cuid())
+  organization   Organization?        @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  role           EnumUserAccountRole?
+  updatedAt      DateTime             @updatedAt
+  username       String?
+}
+
+model Client {
+  createdAt          DateTime            @default(now())
+  designDevelopments DesignDevelopment[]
+  id                 String              @id @default(cuid())
+  name               String?
+  organization       Organization?       @relation(fields: [organizationId], references: [id])
+  organizationId     String?
+  updatedAt          DateTime            @updatedAt
+}
+
+model Production {
+  createdAt           DateTime              @default(now())
+  designDevelopment   DesignDevelopment?    @relation(fields: [designDevelopmentId], references: [id])
+  designDevelopmentId String?
+  id                  String                @id @default(cuid())
+  name                String?
+  status              EnumProductionStatus?
+  updatedAt           DateTime              @updatedAt
+}
+
+enum EnumOrganizationTypeField {
+  Option1
+}
+
+enum EnumDesignDevelopmentStatus {
+  Option1
+}
+
+enum EnumUserAccountRole {
+  Option1
+}
+
+enum EnumProductionStatus {
+  Option1
+}

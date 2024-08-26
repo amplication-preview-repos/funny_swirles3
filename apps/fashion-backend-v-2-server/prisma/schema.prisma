@@ -1,0 +1,78 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Supplier {
+  createdAt           DateTime               @default(now())
+  id                  String                 @id @default(cuid())
+  name                String?
+  organization        Organization?          @relation(fields: [organizationId], references: [id])
+  organizationId      String?
+  productionProcesses ProductionProcess[]
+  typeField           EnumSupplierTypeField?
+  updatedAt           DateTime               @updatedAt
+}
+
+model Organization {
+  clients   Client[]
+  createdAt DateTime                   @default(now())
+  id        String                     @id @default(cuid())
+  name      String?
+  suppliers Supplier[]
+  typeField EnumOrganizationTypeField?
+  updatedAt DateTime                   @updatedAt
+}
+
+model ProductionProcess {
+  client     Client?                     @relation(fields: [clientId], references: [id])
+  clientId   String?
+  createdAt  DateTime                    @default(now())
+  id         String                      @id @default(cuid())
+  name       String?
+  samples    Sample[]
+  stage      EnumProductionProcessStage?
+  supplier   Supplier?                   @relation(fields: [supplierId], references: [id])
+  supplierId String?
+  updatedAt  DateTime                    @updatedAt
+}
+
+model Client {
+  createdAt           DateTime            @default(now())
+  id                  String              @id @default(cuid())
+  name                String?
+  organization        Organization?       @relation(fields: [organizationId], references: [id])
+  organizationId      String?
+  productionProcesses ProductionProcess[]
+  updatedAt           DateTime            @updatedAt
+}
+
+model Sample {
+  createdAt           DateTime           @default(now())
+  id                  String             @id @default(cuid())
+  name                String?
+  productionProcess   ProductionProcess? @relation(fields: [productionProcessId], references: [id])
+  productionProcessId String?
+  status              EnumSampleStatus?
+  updatedAt           DateTime           @updatedAt
+}
+
+enum EnumSupplierTypeField {
+  Option1
+}
+
+enum EnumOrganizationTypeField {
+  Option1
+}
+
+enum EnumProductionProcessStage {
+  Option1
+}
+
+enum EnumSampleStatus {
+  Option1
+}
